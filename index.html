@@ -15,9 +15,12 @@
 <script>
   const params = new URLSearchParams(location.search);
   const base64 = params.get("data");
+  const urlParam = params.get("url");
 
+  const v = document.getElementById("v");
+
+  // Base64 mode
   if (base64) {
-    // Convert Base64 → Blob
     const byteChars = atob(base64);
     const byteNums = new Array(byteChars.length);
     for (let i = 0; i < byteChars.length; i++) {
@@ -25,21 +28,20 @@
     }
     const byteArray = new Uint8Array(byteNums);
     const blob = new Blob([byteArray], { type: "video/mp4" });
-
-    // Create URL
-    const url = URL.createObjectURL(blob);
-
-    // Load video
-    const v = document.getElementById("v");
-    v.src = url;
-
-    // Auto-play + Auto-PiP
-    v.play().then(() => {
-      if (document.pictureInPictureEnabled) {
-        v.requestPictureInPicture().catch(() => {});
-      }
-    });
+    v.src = URL.createObjectURL(blob);
   }
+
+  // URL mode (Dropbox, Streamable, CDN, raw MP4)
+  if (urlParam) {
+    v.src = urlParam;
+  }
+
+  // Auto-play + Auto-PiP
+  v.play().then(() => {
+    if (document.pictureInPictureEnabled) {
+      v.requestPictureInPicture().catch(() => {});
+    }
+  });
 </script>
 
 </body>
