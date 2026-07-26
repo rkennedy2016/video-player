@@ -2,96 +2,43 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Auto PiP</title>
+<title>Manual PiP</title>
 <style>
   body { margin: 0; background: #000; }
   video { width: 100%; height: auto; }
+  #pipButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 18px;
+    background: white;
+    border-radius: 8px;
+    font-size: 16px;
+    border: none;
+  }
 </style>
 </head>
 <body>
 
-<video id="v" playsinline autoplay></video>
+<video id="v" playsinline controls></video>
+<button id="pipButton">Enter PiP</button>
 
 <script>
   const params = new URLSearchParams(location.search);
-  const base64 = params.get("data");
   const urlParam = params.get("url");
-
   const v = document.getElementById("v");
 
-  // Base64 mode
-  if (base64) {
-    const byteChars = atob(base64);
-    const byteNums = new Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) {
-      byteNums[i] = byteChars.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNums);
-    const blob = new Blob([byteArray], { type: "video/mp4" });
-    v.src = URL.createObjectURL(blob);
-  }
-
-  // URL mode
   if (urlParam) {
     v.src = urlParam;
   }
 
-  // Auto-play + Auto-PiP
-  v.muted = false;   // REQUIRED for Safari PiP
-  v.play().then(() => {
-    if (document.pictureInPictureEnabled) {
-      v.requestPictureInPicture().catch(() => {});
+  document.getElementById("pipButton").onclick = async () => {
+    try {
+      await v.requestPictureInPicture();
+    } catch (e) {
+      console.log(e);
     }
-  });
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Auto PiP</title>
-<style>
-  body { margin: 0; background: #000; }
-  video { width: 100%; height: auto; }
-</style>
-</head>
-<body>
-
-<video id="v" playsinline autoplay></video>
-
-<script>
-  const params = new URLSearchParams(location.search);
-  const base64 = params.get("data");
-  const urlParam = params.get("url");
-
-  const v = document.getElementById("v");
-
-  // Base64 mode
-  if (base64) {
-    const byteChars = atob(base64);
-    const byteNums = new Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) {
-      byteNums[i] = byteChars.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNums);
-    const blob = new Blob([byteArray], { type: "video/mp4" });
-    v.src = URL.createObjectURL(blob);
-  }
-
-  // URL mode
-  if (urlParam) {
-    v.src = urlParam;
-  }
-
-  // Auto-play + Auto-PiP
-  v.muted = false;   // REQUIRED for Safari PiP
-  v.play().then(() => {
-    if (document.pictureInPictureEnabled) {
-      v.requestPictureInPicture().catch(() => {});
-    }
-  });
+  };
 </script>
 
 </body>
