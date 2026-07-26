@@ -2,39 +2,44 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Auto PiP Player</title>
+<title>Auto PiP</title>
 <style>
-  body {
-    margin: 0;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  video {
-    width: 100%;
-    max-width: 800px;
-    border-radius: 12px;
-  }
+  body { margin: 0; background: #000; }
+  video { width: 100%; height: auto; }
 </style>
 </head>
 <body>
 
-<video id="v" playsinline autoplay muted>
-  <source src="your-video.mp4" type="video/mp4">
-</video>
+<video id="v" playsinline autoplay muted></video>
 
 <script>
-  const v = document.getElementById('v');
+  const params = new URLSearchParams(location.search);
+  const base64 = params.get("data");
 
-  // Try to auto-play first
-  v.play().then(() => {
-    // Then auto-enter PiP
-    if (document.pictureInPictureEnabled) {
-      v.requestPictureInPicture().catch(err => console.log(err));
+  if (base64) {
+    // Convert Base64 → Blob
+    const byteChars = atob(base64);
+    const byteNums = new Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) {
+      byteNums[i] = byteChars.charCodeAt(i);
     }
-  }).catch(err => console.log(err));
+    const byteArray = new Uint8Array(byteNums);
+    const blob = new Blob([byteArray], { type: "video/mp4" });
+
+    // Create URL
+    const url = URL.createObjectURL(blob);
+
+    // Load video
+    const v = document.getElementById("v");
+    v.src = url;
+
+    // Auto-play + Auto-PiP
+    v.play().then(() => {
+      if (document.pictureInPictureEnabled) {
+        v.requestPictureInPicture().catch(() => {});
+      }
+    });
+  }
 </script>
 
 </body>
