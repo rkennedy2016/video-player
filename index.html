@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Auto PiP Player</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  video {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 12px;
+  }
+</style>
+</head>
+<body>
+
+<video id="v" playsinline autoplay muted>
+  <source src="your-video.mp4" type="video/mp4">
+</video>
+
+<script>
+  const v = document.getElementById('v');
+
+  // Try to auto-play first
+  v.play().then(() => {
+    // Then auto-enter PiP
+    if (document.pictureInPictureEnabled) {
+      v.requestPictureInPicture().catch(err => console.log(err));
+    }
+  }).catch(err => console.log(err));
+</script>
+
+</body>
+</html>
