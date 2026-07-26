@@ -28,10 +28,12 @@
   const urlParam = params.get("url");
   const v = document.getElementById("v");
 
+  // Load remote video normally
   if (urlParam) {
     v.src = urlParam;
   }
 
+  // Manual PiP only — NO auto PiP anywhere
   document.getElementById("pipButton").onclick = async () => {
     try {
       await v.requestPictureInPicture();
